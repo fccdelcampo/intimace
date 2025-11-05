@@ -1,6 +1,7 @@
 package com.intimace.ui.screens.calendarPath
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -114,22 +115,34 @@ fun CalendarScreen(
 
             Spacer(modifier = Modifier.height(18.dp))
 
-            // Legend and forecast card
-            Text("Legend", style = MaterialTheme.typography.titleLarge, fontWeight = FontWeight.SemiBold)
-            Spacer(modifier = Modifier.height(8.dp))
-            Column {
-                // small legend items
-                val legend = listOf(
-                    Pair("Menstruation Phase", Color(0xFFFFECEC)),
-                    Pair("Follicular Phase", Color(0xFFDCEBFF)),
-                    Pair("Ovulation Phase", Color(0xFFF3E8FF)),
-                    Pair("Luteal Phase", Color(0xFFFFF2D6))
+            Card(modifier = Modifier.fillMaxWidth(), shape = RoundedCornerShape(12.dp), elevation = CardDefaults.cardElevation(6.dp),
+                colors = CardDefaults.cardColors(
+                    containerColor = MaterialTheme.colorScheme.secondaryContainer,
+                    contentColor = MaterialTheme.colorScheme.onSecondaryContainer
                 )
-                legend.forEach { (label, color) ->
-                    Row(verticalAlignment = Alignment.CenterVertically, modifier = Modifier.padding(vertical = 6.dp)) {
-                        Box(modifier = Modifier.size(16.dp).clip(RoundedCornerShape(8.dp)).background(color))
-                        Spacer(modifier = Modifier.width(8.dp))
-                        Text(label, style = MaterialTheme.typography.bodyMedium)
+            ) {
+                // Legend and forecast card
+                Column(modifier = Modifier.padding(16.dp)) {
+                    Text("Legend", style = MaterialTheme.typography.titleLarge, fontWeight = FontWeight.SemiBold)
+                    Spacer(modifier = Modifier.height(8.dp))
+                    // small legend items
+                    val legend = listOf(
+                        Pair("Menstruation Phase", Color(0xFFFFECEC)),
+                        Pair("Follicular Phase", Color(0xFFDCEBFF)),
+                        Pair("Ovulation Phase", Color(0xFFF3E8FF)),
+                        Pair("Luteal Phase", Color(0xFFFFF2D6))
+                    )
+                    legend.forEach { (label, color) ->
+                        Row(verticalAlignment = Alignment.CenterVertically, modifier = Modifier.padding(vertical = 6.dp)) {
+                            Box(modifier = Modifier.size(16.dp).clip(RoundedCornerShape(8.dp)).background(color).border( // Add the border modifier
+                                width = 0.5.dp,
+                                color = Color.DarkGray,
+                                shape = RoundedCornerShape(8.dp) // Match the shape of the clip
+                            ))
+                            Spacer(modifier = Modifier.width(8.dp))
+                            Text(label, style = MaterialTheme.typography.bodyMedium)
+                        }
+                        Spacer(modifier = Modifier.height(6.dp))
                     }
                 }
             }
@@ -205,6 +218,15 @@ fun MonthCalendar(year: Int, monthZeroBased: Int) {
         }
     }
 
+    fun circleForDay(d: Int?): Color {
+        if (d == null) return Color.Transparent
+        return when {
+            d in 13..15 -> Color(0xFFFF6B6B) // high chance of pregnancy
+            d == 12 || d == 16 -> Color(0xFFFFC857) // medium chance of pregnancy
+            else -> Color(0xFF5BD078) // low chance of pregnancy
+        }
+    }
+
     val rows = cells.size / 7
     val cellHeight = 56.dp
     // Use LazyVerticalGrid to force 7 equal-width cells per row (no spanning)
@@ -226,15 +248,18 @@ fun MonthCalendar(year: Int, monthZeroBased: Int) {
                     contentAlignment = Alignment.Center
                 ) {
                     if (day != null) {
-                        Card(
-                            modifier = Modifier.fillMaxSize(),
-                            shape = RoundedCornerShape(10.dp),
-                            elevation = CardDefaults.cardElevation(0.dp),
-                            colors = CardDefaults.cardColors(containerColor = bgForDay(day))
-                        ) {
-                            Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-                                Text(text = day.toString(), style = MaterialTheme.typography.bodyMedium, modifier = Modifier.padding(6.dp), color = Color.DarkGray)
+                        Box {
+                            Card(
+                                modifier = Modifier.fillMaxSize(),
+                                shape = RoundedCornerShape(10.dp),
+                                elevation = CardDefaults.cardElevation(0.dp),
+                                colors = CardDefaults.cardColors(containerColor = bgForDay(day))
+                            ) {
+                                Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+                                    Text(text = day.toString(), style = MaterialTheme.typography.bodyMedium, modifier = Modifier.padding(6.dp), color = Color.DarkGray)
+                                }
                             }
+                            Box(modifier = Modifier.size(10.dp).clip(RoundedCornerShape(5.dp)).background(circleForDay(day)).align(Alignment.TopEnd))
                         }
                     } else {
                         // empty cell (keeps grid shape)

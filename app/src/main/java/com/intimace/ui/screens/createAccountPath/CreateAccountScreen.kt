@@ -205,7 +205,7 @@ fun CreateAccountScreen(
                     PrimaryButton(
                         text = "Create Account",
                         onClick = { onCreateAccount(email, username, password, pin) },
-                        enabled = email.isNotEmpty() && username.isNotEmpty() && password.isNotEmpty() && confirmPassword.isNotEmpty() && pin.isNotEmpty() && validatePasswordAndConfirmationPassword()
+                        enabled = email.isNotEmpty() && username.isNotEmpty() && password.isNotEmpty() && confirmPassword.isNotEmpty() && pinError == null && validatePasswordAndConfirmationPassword()
                     )
 
                     Spacer(modifier = Modifier.height(12.dp))

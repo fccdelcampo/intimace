@@ -52,6 +52,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
+import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.currentBackStackEntryAsState
 import com.intimace.ui.screens.shoppingCartPath.toPeso
@@ -362,28 +363,20 @@ fun AppBottomNav(
     val navBackStackEntry by navController.currentBackStackEntryAsState()
     val currentRoute = navBackStackEntry?.destination?.route
 
-    val calendarPath = listOf("calendar")
-    val checkoutPath = listOf("checkout")
-    val createPath = listOf(
-        "createAccount",
-        "welcome1",
-        "welcome2",
-        "welcome3",
-        "welcome4"
-    )
-    val guidesPath = listOf(
-        "guides",
-        "guide"
-    )
     val homePath = listOf(
         "home",
         "logSymptoms"
     )
-    val loginPath = listOf(
-        "login",
-        "resetPassword"
+    val calendarPath = listOf("calendar")
+    val guidesPath = listOf(
+        "guides",
+        "guide"
     )
-    val orderHistoryPath = listOf(
+    val shopPath = listOf(
+        "shop",
+        "product",
+        "cart",
+        "checkout",
         "orders",
         "order"
     )
@@ -395,16 +388,6 @@ fun AppBottomNav(
         "help",
         "partnerLink",
     )
-    val shopPath = listOf(
-        "shop",
-        "product",
-        "cart",
-        "checkout",
-        "orders",
-        "order"
-    )
-
-
 
     NavigationBar(
         tonalElevation = 6.dp,
@@ -414,13 +397,12 @@ fun AppBottomNav(
         val unselectedColor = MaterialTheme.colorScheme.onSurfaceVariant
 
         fun navigateTo(route: String) {
-            if (currentRoute != route) {
-                navController.navigate(route) {
-                    // avoid building large backstack when switching tabs
-                    popUpTo(navController.graph.startDestinationId) { saveState = true }
-                    launchSingleTop = true
-                    restoreState = true
+            navController.navigate(route) {
+                popUpTo(navController.graph.findStartDestination().id) {
+                    saveState = true
                 }
+                launchSingleTop = true
+                restoreState = true
             }
         }
 
@@ -429,7 +411,13 @@ fun AppBottomNav(
             icon = { Icon(imageVector = Icons.Default.Home, contentDescription = "Home") },
             label = { Text("Home") },
             selected = currentRoute in homePath,
-            onClick = { navigateTo("home") },
+            onClick = {
+                if (currentRoute in homePath) {
+                    navController.popBackStack("home", false)
+                } else {
+                    navigateTo("home")
+                }
+            },
             colors = NavigationBarItemDefaults.colors(
                 selectedIconColor = selectedColor,
                 unselectedIconColor = unselectedColor
@@ -441,7 +429,13 @@ fun AppBottomNav(
             icon = { Icon(imageVector = Icons.Default.CalendarToday, contentDescription = "Calendar") },
             label = { Text("Calendar") },
             selected = currentRoute in calendarPath,
-            onClick = { navigateTo("calendar") },
+            onClick = {
+                if (currentRoute in calendarPath) {
+                    navController.popBackStack("calendar", false)
+                } else {
+                    navigateTo("calendar")
+                }
+            },
             colors = NavigationBarItemDefaults.colors(
                 selectedIconColor = selectedColor,
                 unselectedIconColor = unselectedColor
@@ -453,7 +447,13 @@ fun AppBottomNav(
             icon = { Icon(imageVector = Icons.Default.Book, contentDescription = "Guides") },
             label = { Text("Guides") },
             selected = currentRoute in guidesPath,
-            onClick = { navigateTo("guides") },
+            onClick = {
+                if (currentRoute in guidesPath) {
+                    navController.popBackStack("guides", false)
+                } else {
+                    navigateTo("guides")
+                }
+            },
             colors = NavigationBarItemDefaults.colors(
                 selectedIconColor = selectedColor,
                 unselectedIconColor = unselectedColor
@@ -465,7 +465,13 @@ fun AppBottomNav(
             icon = { Icon(imageVector = Icons.Default.LocalMall, contentDescription = "Shop") },
             label = { Text("Shop") },
             selected = currentRoute in shopPath,
-            onClick = { navigateTo("shop") },
+            onClick = {
+                if (currentRoute in shopPath) {
+                    navController.popBackStack("shop", false)
+                } else {
+                    navigateTo("shop")
+                }
+            },
             colors = NavigationBarItemDefaults.colors(
                 selectedIconColor = selectedColor,
                 unselectedIconColor = unselectedColor
@@ -477,7 +483,13 @@ fun AppBottomNav(
             icon = { Icon(imageVector = Icons.Default.Person, contentDescription = "Profile") },
             label = { Text("Profile") },
             selected = currentRoute in settingsPath,
-            onClick = { navigateTo("settings") }, // links to SettingsScreen per your request
+            onClick = {
+                if (currentRoute in settingsPath) {
+                    navController.popBackStack("settings", false)
+                } else {
+                    navigateTo("settings")
+                }
+            }, // links to SettingsScreen per your request
             colors = NavigationBarItemDefaults.colors(
                 selectedIconColor = selectedColor,
                 unselectedIconColor = unselectedColor
